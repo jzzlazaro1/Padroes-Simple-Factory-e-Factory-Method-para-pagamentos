@@ -1,209 +1,60 @@
-🏭 **Abstract Factory & Strategy em Python**
+🏗️ **Padrões de Criação em Python:**
 
-Uma implementação de sistema que utiliza os padrões de design Abstract Factory e Strategy para criar e gerenciar diferentes métodos de pagamento e canais de notificação de forma flexível e extensível.
+Factory Method e Fábricas de PagamentoEste repositório em Python demonstra o uso de Padrões de Criação para gerenciar a instancialização de objetos em dois domínios distintos: Processamento de Pagamentos e Serviços de Notificação.
 
-🌟 **Padrões de Design**
+🚀 **Padrões Demonstrados Padrão DomínioConceito Principal Factory Method Notificações**
 
-Este projeto exemplifica a aplicação de:
+Delega a responsabilidade de criação para subclasses.Fábrica Simples/AgrupadaPagamentosCentraliza a lógica de criação de produtos relacionados (Online vs. Offline) em classes especializadas.
 
-1. Strategy Pattern (Estratégia)
-Onde: Classes Pagamento e Notificacao.
+💳**1. Padrão de Pagamento:**
 
-O que faz: Define uma família de algoritmos, encapsula cada um e os torna intercambiáveis.
+Fábricas Agrupadas (FactoryPagamentoOnline, FactoryPagamentoOffline)Este domínio demonstra uma abordagem para agrupar produtos relacionados (Pagamentos) em fábricas específicas. Embora a classe base PagamentoFactory defina um método de criação que se assemelha ao Factory Method, as implementações concretas (FactoryPagamentoOnline, FactoryPagamentoOffline) contêm lógica condicional que as torna uma variação do Simple Factory dentro de uma hierarquia de fábricas, o que é uma técnica comum que lembra o padrão Abstract Factory.Estrutura de PagamentosProduto Abstrato: Pagamento (com o método processarPagamento).
 
-Em Pagamento, permite trocar facilmente entre Cartão, Pix ou Boleto.
+Produtos Concretos: PagamentoCartao, PagamentoBoleto, PagamentoPix.
+Fábricas Concretas: FactoryPagamentoOnline: 
 
-Em Notificacao, permite trocar facilmente entre E-mail, SMS ou WhatsApp.
+Cria PagamentoCartao ou PagamentoPix.
 
-2. Abstract Factory Pattern (Fábrica Abstrata)
-Onde: Classes PagamentoFactory e NotificacaoFactory.
+FactoryPagamentoOffline: Cria PagamentoBoleto.
 
-O que faz: Fornece uma interface para criar famílias de objetos relacionados ou dependentes sem especificar suas classes concretas.
+Trecho de Demonstração (Cliente)Python# Demonstração do Cliente com Abstract Factory (Exemplo)
 
-Fábricas de Pagamento: Permitem criar objetos dentro da "família" Online (Cartão, Pix) ou Offline (Boleto).
+factory_online = FactoryPagamentoOnline()
+pagamento_cartao = factory_online.criarPagamento("cartao")
+print(f"Pagamento Online (Cartão): {pagamento_cartao.processarPagamento(100.00)}")
 
-Fábricas de Notificação: Permitem criar objetos específicos (Email, SMS, WhatsApp) de forma controlada.
+factory_offline = FactoryPagamentoOffline()
+pagamento_boleto = factory_offline.criarPagamento("boleto")
+print(f"Pagamento Offline (Boleto): {pagamento_boleto.processarPagamento(50.50)}")
 
-⚙️ **Estrutura do Código (design_patterns_demo.py)**
+🔔 **2. Padrão de Notificação:** 
 
-Todo o sistema está contido em um único arquivo, demonstrando as interfaces abstratas e suas implementações concretas.
+Factory MethodNo domínio de notificações, o padrão Factory Method é estritamente aplicado. Em vez de uma única classe de fábrica com if/else, existe uma hierarquia de fábricas, onde cada fábrica concreta é responsável por criar apenas um tipo de notificação.ShutterstockExplorarEstrutura de NotificaçãoProduto Abstrato: Notificacao (com o método enviar).
 
-Python
+Produtos Concretos: NotificacaoEmail, NotificacaoSMS, NotificacaoWhatsApp.Fábricas Concretas:EmailNotificacaoFactory:
 
-from abc import ABC, abstractmethod
+Cria NotificacaoEmail.SMSNotificacaoFactory: Cria NotificacaoSMS.WhatsAppNotificacaoFactory: Cria NotificacaoWhatsApp.Vantagem Principal (OCP)Este padrão segue o Princípio Aberto/Fechado (OCP). Para adicionar uma nova forma de notificação (ex: NotificacaoPush), basta criar a classe NotificacaoPush e sua fábrica correspondente, sem modificar as classes de fábrica existentes.
 
-# ________________________________
-# I. Padrão Strategy: Pagamento
-# ________________________________
+Trecho de Demonstração (Cliente)Python# Demonstração do Cliente com Fábricas Concretas
 
-class Pagamento(ABC):
-    @abstractmethod
-    def processarPagamento(self, valor: float) -> str:
-        pass
+email_factory = EmailNotificacaoFactory()
+email_notifier = email_factory.criarNotificacao()
+print(email_notifier.enviar("cliente@exemplo.com", "Sua fatura mensal está disponível."))
 
-class PagamentoCartao(Pagamento):
-    def processarPagamento(self, valor: float) -> str:
-        return f"Pagamento de R${valor:.2f} realizado com cartão de crédito."
+sms_factory = SMSNotificacaoFactory()
+sms_notifier = sms_factory.criarNotificacao()
+print(sms_notifier.enviar("+559988776655", "Seu pedido foi despachado!"))
 
-class PagamentoBoleto(Pagamento):
-    def processarPagamento(self, valor: float) -> str:
-        return f"Pagamento de R${valor:.2f} realizado com boleto bancário."
+💻 **Como Rodar o Projeto (Python)Assumindo que você está utilizando Python 3:1.**
 
-class PagamentoPix(Pagamento):
-    def processarPagamento(self, valor: float) -> str:
-        return f"Pagamento de R${valor:.2f} realizado com Pix."
+Clonar o RepositórioBashgit clone https://github.com/SeuUsuario/NomeDoSeuRepositorio.git
+cd NomeDoSeuRepositorio
 
-# _________________________________
-# II. Padrão Strategy: Notificação
-# _________________________________
+2. Executar se o seu código está em um único arquivo (main.py), basta executá-lo para ver a demonstração de ambos os padrões:Bashpython main.py
 
-class Notificacao(ABC):
-    @abstractmethod
-    def enviar(self, destino: str, mensagem: str) -> str:
-        pass
+🛠️ **Detalhes da Implementação:**
 
-class NotificacaoEmail(Notificacao):
-    def enviar(self, destino: str, mensagem: str) -> str:
-        return f"E-mail enviado para {destino} com a mensagem: '{mensagem}'."
-
-class NotificacaoSMS(Notificacao):
-    def enviar(self, destino: str, mensagem: str) -> str:
-        return f"SMS enviado para {destino} com a mensagem: '{mensagem}'."
-
-class NotificacaoWhatsApp(Notificacao):
-    def enviar(self, destino: str, mensagem: str) -> str:
-        return f"Mensagem de WhatsApp enviada para {destino} com a mensagem: '{mensagem}'."
-
-# _______________________________________________________
-# III. Padrão Abstract Factory: FÁBRICAS DE NOTIFICAÇÃO
-# (Aplicando o padrão Factory Method para Notificação)
-# _______________________________________________________
-
-class NotificacaoFactory(ABC):
-    @abstractmethod
-    def criarNotificacao(self) -> Notificacao:
-        pass
-
-class EmailNotificacaoFactory(NotificacaoFactory):
-    def criarNotificacao(self) -> Notificacao:
-        return NotificacaoEmail()
-
-class SMSNotificacaoFactory(NotificacaoFactory):
-    def criarNotificacao(self) -> Notificacao:
-        return NotificacaoSMS()
-
-class WhatsAppNotificacaoFactory(NotificacaoFactory):
-    def criarNotificacao(self) -> Notificacao:
-        return NotificacaoWhatsApp()
-
-
-# _______________________________________________________________
-# IV. Padrão Abstract Factory: FÁBRICAS DE PAGAMENTO
-# (Aplicando o padrão Abstract Factory para a família Pagamento)
-# _______________________________________________________________
-
-class PagamentoFactory(ABC):
-    @abstractmethod
-    def criarPagamento(self, tipo_pagamento: str) -> Pagamento:
-        pass
-
-class FactoryPagamentoOnline(PagamentoFactory):
-    def criarPagamento(self, tipo_pagamento: str) -> Pagamento:
-        if tipo_pagamento == "cartao":
-            return PagamentoCartao()
-        elif tipo_pagamento == "pix":
-            return PagamentoPix()
-        else:
-            raise ValueError(f"Tipo de pagamento online não suportado: {tipo_pagamento}")
-
-class FactoryPagamentoOffline(PagamentoFactory):
-    def criarPagamento(self, tipo_pagamento: str) -> Pagamento:
-        if tipo_pagamento == "boleto":
-            return PagamentoBoleto()
-        else:
-            raise ValueError(f"Tipo de pagamento offline não suportado: {tipo_pagamento}")
-
-# ___________________________________________________
-# V. Demonstrações do Cliente
-# ___________________________________________________
-
-def demonstracao_notificacao():
-    print('\n--- Demonstração: Fábricas de Notificação ---')
-
-    email_factory = EmailNotificacaoFactory()
-    sms_factory = SMSNotificacaoFactory()
-    whatsapp_factory = WhatsAppNotificacaoFactory()
-
-    # Criar e enviar notificação por e-mail
-    email_notifier = email_factory.criarNotificacao()
-    print(email_notifier.enviar("cliente@exemplo.com", "Sua fatura mensal está disponível."))
-
-    # Criar e enviar notificação por SMS
-    sms_notifier = sms_factory.criarNotificacao()
-    print(sms_notifier.enviar("+559988776655", "Seu pedido foi despachado!"))
-
-    # Criar e enviar notificação por WhatsApp
-    whatsapp_notifier = whatsapp_factory.criarNotificacao()
-    print(whatsapp_notifier.enviar("+5511999998888", "Promoção exclusiva para você!"))
-
-def demonstracao_pagamento():
-    print('\n--- Demonstração: Abstract Factory de Pagamento ---')
-
-    # 1. Pagamento Online (Família Online)
-    factory_online = FactoryPagamentoOnline()
-    pagamento_cartao = factory_online.criarPagamento("cartao")
-    pagamento_pix = factory_online.criarPagamento("pix")
-
-    valor_online = 100.00
-    print(pagamento_cartao.processarPagamento(valor_online))
-    print(pagamento_pix.processarPagamento(valor_online))
-
-    # 2. Pagamento Offline (Família Offline)
-    factory_offline = FactoryPagamentoOffline()
-    pagamento_boleto = factory_offline.criarPagamento("boleto")
-
-    valor_offline = 50.50
-    print(pagamento_boleto.processarPagamento(valor_offline))
-
-if __name__ == "__main__":
-    demonstracao_notificacao()
-    demonstracao_pagamento()
-    
-🚀 **Como Executar**
-
-O projeto é um único arquivo Python e requer apenas o interpretador Python instalado.
-
-Pré-requisitos:
-
--> Python 3.x
-
-Passos:
-
--> Salve o código acima em um arquivo chamado design_patterns_demo.py.
-
-Execute o arquivo a partir do seu terminal:
-
--> Bash
-
--> python design_patterns_demo.py
-
-Saída Esperada:
-
---- Demonstração: Fábricas de Notificação ---
-E-mail enviado para cliente@exemplo.com com a mensagem: 'Sua fatura mensal está disponível.'.
-SMS enviado para +559988776655 com a mensagem: 'Seu pedido foi despachado!'.
-Mensagem de WhatsApp enviada para +5511999998888 com a mensagem: 'Promoção exclusiva para você!'.
-
---- Demonstração: Abstract Factory de Pagamento ---
-Pagamento de R$100.00 realizado com cartão de crédito.
-Pagamento de R$100.00 realizado com Pix.
-Pagamento de R$50.50 realizado com boleto bancário.
-
-📧 **Contato**
-
-João Lázaro Brito - joaolazarobritoeps@gmail.com
-
-
+Todas as classes abstratas utilizam o módulo abc do Python e o decorador @abstractmethod para garantir que as classes concretas implementem os métodos necessários (processarPagamento ou enviar).
 
 
 
